@@ -3,9 +3,7 @@ package sample;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -24,13 +22,14 @@ public class Main extends Application {
         File directory = directoryChooser.showDialog(primaryStage);
 
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource(
-                        "Display.fxml"
+                Main.class.getResource(
+                        "/Display.fxml"
                 )
         );
+        primaryStage.setTitle("Select");
         primaryStage.setScene(
                 new Scene(
-                        (Pane) loader.load()
+                        loader.load()
                 )
         );
         primaryStage.setResizable(true);
@@ -48,7 +47,7 @@ public class Main extends Application {
             try {
                 img = ImageIO.read(file);
             } catch(Exception e){
-                System.out.println("Could not opeen file.");
+                System.out.println("Could not open file. Could be a folder.");
                 continue;
             }
             if (img == null) {
@@ -56,6 +55,7 @@ public class Main extends Application {
                 continue;
             }
             Image image = SwingFXUtils.toFXImage(img, null);
+            controller.initData(image, file);
         }
     }
 
