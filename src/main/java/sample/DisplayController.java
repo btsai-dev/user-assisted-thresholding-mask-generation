@@ -1,13 +1,17 @@
 package sample;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -20,72 +24,76 @@ import java.util.List;
 
 public class DisplayController {
     @FXML
-    ImageView ORIG;
-
+    Tab InstructionsTab, ApplyBlurTab, ApplyCannyTab, ApplyMaskTab;
     @FXML
-    ImageView BLUR;
-
+    AnchorPane ApplyBlurAnchorPane, ApplyCannyAnchorPane;
     @FXML
-    ImageView CANY;
-
+    Slider BilateralFilteringFilterSize, BilateralFilteringFilterSigma, CannyThreshold01, CannyThreshold02;
     @FXML
-    ImageView MASK;
-
+    Label BilateralFilteringFilterSizeLabel, BilateralFilteringFilterSigmaLabel, CannyThreshold01Label, CannyThreshold02Label;
     @FXML
-    Slider ThreshSize;
-
+    Button LoadBlur, ResetBlur, LoadCanny, ResetCanny;
     @FXML
-    Slider ThreshSigma;
+    ImageView BlurImage, CannyImage;
 
-    @FXML
-    Slider Thresh001;
-
-    @FXML
-    Slider Thresh002;
-
-    @FXML
-    Button LOADBLUR;
-
-    @FXML
-    Button LOADCANY;
-
-    @FXML
-    Button LOADMASK;
-
-    @FXML
-    Button SAVE;
-
-    @FXML
-    GridPane IMGDISP;
-
-    @FXML
-    Button INTERRUPT;
 
     private static File imgFile;
-    private static final int ROWS = 2;
-    private static final int COLS = 2;
-    private static final int MARGIN = 10;
-    private static Mat orig;
-    private static Mat gray;
-    private static Mat blur;
-    private static Mat cany;
-    private static Mat mask;
-    private static String stage = "NONE";
-    private static Thread worker;
+    private static Mat orig, gray, blur, canny, mask;
 
     public void initData(Image img, File file){
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        // Tie ImageView sizes to AnchorPane sizes
+        BlurImage.fitHeightProperty().bind(ApplyBlurAnchorPane.heightProperty());
+        BlurImage.fitWidthProperty().bind(ApplyBlurAnchorPane.heightProperty());
+        CannyImage.fitHeightProperty().bind(ApplyCannyAnchorPane.heightProperty());
+        CannyImage.fitWidthProperty().bind(ApplyCannyAnchorPane.heightProperty());
+
+        // Tie Label values to slider values
+        BilateralFilteringFilterSizeLabel.textProperty().bind(
+                Bindings.format(
+                        "FILTER SIZE: %.0f",
+                        BilateralFilteringFilterSize.valueProperty()
+                )
+        );
+        BilateralFilteringFilterSigmaLabel.textProperty().bind(
+                Bindings.format(
+                        "FILTER SIGMA: %.0f",
+                        BilateralFilteringFilterSigma.valueProperty()
+                )
+        );
+        CannyThreshold01Label.textProperty().bind(
+                Bindings.format(
+                        "THRESHOLD 01 VALUE: %.0f",
+                        CannyThreshold01.valueProperty()
+                )
+        );
+        CannyThreshold02Label.textProperty().bind(
+                Bindings.format(
+                        "THRESHOLD 02 VALUE: %.0f",
+                        CannyThreshold02.valueProperty()
+                )
+        );
+
+        // Disable and enable proper tabs
+        InstructionsTab.setDisable(false);
+        ApplyBlurTab.setDisable(false);
+        ApplyCannyTab.setDisable(true);
+        ApplyMaskTab.setDisable(true);
+
+        // Load in images
+        BlurImage.setImage(img);
+        CannyImage.setImage(null);
+
+        // Load in generic Image Mat
         orig = new Mat();
         gray = new Mat();
         blur = new Mat();
-        cany = new Mat();
+        canny = new Mat();
         mask = new Mat();
-
-        SAVE.setDisable(true);
-        ORIG.setImage(img);
-        BLUR.setImage(null);
-        CANY.setImage(null);
-        MASK.setImage(null);
+        imgFile = file;
+        orig = Imgcodecs.imread(DisplayController.imgFile.getAbsolutePath(), Imgcodecs.IMREAD_COLOR);
+        resetBlur();
+        /**
         IMGDISP.setAlignment(Pos.CENTER);
         ORIG.fitHeightProperty().bind(IMGDISP.heightProperty().subtract(MARGIN).divide(ROWS));
         ORIG.fitWidthProperty().bind(IMGDISP.widthProperty().subtract(MARGIN).divide(COLS));
@@ -95,53 +103,23 @@ public class DisplayController {
         CANY.fitWidthProperty().bind(IMGDISP.widthProperty().subtract(MARGIN).divide(COLS));
         MASK.fitHeightProperty().bind(IMGDISP.heightProperty().subtract(MARGIN).divide(ROWS));
         MASK.fitWidthProperty().bind(IMGDISP.widthProperty().subtract(MARGIN).divide(COLS));
-        imgFile = file;
+         */
     }
 
-    public void saveMask(ActionEvent actionEvent) {
+    public void loadBlur(){
+        // Shut down buttons
+        LoadBlur.setDisable(true);
+        ResetBlur.setDisable(true);
+        // Shut down tabs
+        ApplyCannyTab.setDisable(true);
+        ApplyMaskTab.setDisable(true);
 
-    }
-
-    public void interrupt(ActionEvent actionEvent) {
-        System.out.println("Interrupted Thread");
-        if (stage.equals("NONE")){
-            System.out.println("No stage detected.");
-            return;
-        }
-        try {
-            worker.interrupt();
-        } catch(Exception e){
-            System.out.println("Error when stopping Thread.");
-            e.printStackTrace();
-        }
-        switch (stage){
-            case "BLUR":
-                disableAllButtons();
-                LOADBLUR.setDisable(false);
-                break;
-            case "CANY":
-                disableAllButtons();
-                LOADBLUR.setDisable(false);
-                LOADCANY.setDisable(false);
-                break;
-            case "MASK":
-                disableAllButtons();
-                LOADBLUR.setDisable(false);
-                LOADCANY.setDisable(false);
-                LOADMASK.setDisable(false);
-                break;
-        }
-    }
-
-    public void loadBlur(ActionEvent actionEvent) {
-        disableAllButtons();
-        worker = new Thread(){
+        new Thread(){
             public void run() {
                 System.out.println("Executing Blur Thread.");
-                int filterSize = (int) ThreshSize.getValue();
-                int filterSigma = (int) ThreshSigma.getValue();
+                int filterSize = (int) BilateralFilteringFilterSize.getValue();
+                int filterSigma = (int) BilateralFilteringFilterSigma.getValue();
 
-                orig = Imgcodecs.imread(DisplayController.imgFile.getAbsolutePath(), Imgcodecs.IMREAD_COLOR);
                 if (orig.empty()) {
                     System.out.println("Error opening image");
                     System.out.println(imgFile.getAbsolutePath());
@@ -150,72 +128,98 @@ public class DisplayController {
                 Imgproc.cvtColor(orig, gray, Imgproc.COLOR_BGR2GRAY);
 
                 Imgproc.bilateralFilter(gray, blur, filterSize, filterSigma, filterSigma);
-                MatOfByte blurMatByte = new MatOfByte();
-                Imgcodecs.imencode(".bmp", blur, blurMatByte);
-                Image blurImage = new Image(new ByteArrayInputStream(blurMatByte.toArray()));
+                Image blurImage = getJavaFXImage(blur);
 
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        System.out.println("Updating Blur UI.");
-                        BLUR.setImage(blurImage);
-                        INTERRUPT.setDisable(true);
-                        LOADBLUR.setDisable(false);
-                        LOADCANY.setDisable(false);
-                        stage = "NONE";
-                    }
+                Platform.runLater(() -> {
+                    System.out.println("Updating Blur UI.");
+                    BlurImage.setImage(blurImage);
+                    CannyImage.setImage(blurImage);
+                    LoadBlur.setDisable(false);
+                    ResetBlur.setDisable(false);
+                    ApplyCannyTab.setDisable(false);
                 });
             }
-        };
-        worker.start();
-        stage = "BLUR";
-        INTERRUPT.setDisable(false);
+        }.start();
     }
 
+    public void resetBlur(){
+        LoadBlur.setDisable(true);
+        ResetBlur.setDisable(true);
+        ApplyCannyTab.setDisable(true);
+        ApplyMaskTab.setDisable(true);
+        new Thread(() -> {
+            System.out.println("Resetting Blur Parameters.");
+            int filterSize = 5;
+            int filterSigma = 75;
 
-    public void loadCany(ActionEvent actionEvent) {
-        disableAllButtons();
-        worker = new Thread(){
-            public void run() {
-                System.out.println("Executing Canny Thread.");
-
-                int threshold001 = (int) Thresh001.getValue();
-                int threshold002 = (int) Thresh002.getValue();
-                int threshHigh = Math.max(threshold001, threshold002);
-                int threshLow = Math.min(threshold001, threshold002);
-                int kernelSize = 3;
-
-                Imgproc.Canny(blur, cany, threshLow, threshHigh, kernelSize, true);
-                cany.convertTo(cany, CvType.CV_8UC1);
-                MatOfByte canyMatByte = new MatOfByte();
-                Imgcodecs.imencode(".bmp", cany, canyMatByte);
-                Image canyImage = new Image(new ByteArrayInputStream(canyMatByte.toArray()));
-
-                Platform.runLater(new Runnable() {
-                    public void run() {
-                        System.out.println("Updating Canny UI.");
-                        CANY.setImage(canyImage);
-                        INTERRUPT.setDisable(true);
-                        LOADBLUR.setDisable(false);
-                        LOADCANY.setDisable(false);
-                        LOADMASK.setDisable(false);
-                        stage = "NONE";
-                    }
-                });
-            }
-        };
-        worker.start();
-        stage = "CANY";
-        INTERRUPT.setDisable(false);
+            Platform.runLater(new Runnable() {
+                public void run() {
+                    BlurImage.setImage(getJavaFXImage(orig));
+                    BilateralFilteringFilterSize.setValue(filterSize);
+                    BilateralFilteringFilterSigma.setValue(filterSigma);
+                    LoadBlur.setDisable(false);
+                    ResetBlur.setDisable(false);
+                }
+            });
+        }).start();
+    }
+    public void resetCanny(){
+        // Shut down buttons
+        LoadCanny.setDisable(true);
+        ResetCanny.setDisable(true);
+        // Shut down tabs
+        ApplyBlurTab.setDisable(true);
+        ApplyMaskTab.setDisable(true);
+        new Thread(() -> {
+            double upperThresh = Imgproc.threshold(blur, new Mat(), 0, 255, Imgproc.THRESH_BINARY + Imgproc.THRESH_OTSU);
+            double lowerThresh = upperThresh / 2;
+            Platform.runLater(new Runnable() {
+                public void run() {
+                    System.out.println("Updating Canny UI.");
+                    CannyImage.setImage(getJavaFXImage(blur));
+                    CannyThreshold01.setValue(upperThresh);
+                    CannyThreshold02.setValue(lowerThresh);
+                    LoadCanny.setDisable(false);
+                    ResetCanny.setDisable(false);
+                    ApplyBlurTab.setDisable(false);
+                }
+            });
+        }).start();
     }
 
-    private void disableAllButtons() {
-        SAVE.setDisable(true);
-        LOADBLUR.setDisable(true);
-        LOADCANY.setDisable(true);
-        LOADMASK.setDisable(true);
-        INTERRUPT.setDisable(true);
+    public void loadCanny(){
+        // Shut down buttons
+        LoadCanny.setDisable(true);
+        ResetCanny.setDisable(true);
+        // Shut down tabs
+        ApplyBlurTab.setDisable(true);
+        ApplyMaskTab.setDisable(true);
+
+        new Thread(() -> {
+            int threshold01 = (int) CannyThreshold01.getValue();
+            int threshold02 = (int) CannyThreshold02.getValue();
+
+            int threshHigh = Math.max(threshold01, threshold02);
+            int threshLow = Math.min(threshold01, threshold02);
+
+            int kernelSize = 3;
+
+            Imgproc.Canny(blur, canny, threshLow, threshHigh, kernelSize, true);
+            canny.convertTo(canny, CvType.CV_8UC1);
+            Image cannyImage = getJavaFXImage(canny);
+
+            Platform.runLater(() -> {
+                System.out.println("Updating Canny UI.");
+                CannyImage.setImage(cannyImage);
+                LoadCanny.setDisable(false);
+                ResetCanny.setDisable(false);
+                ApplyBlurTab.setDisable(false);
+                ApplyMaskTab.setDisable(false);
+            });
+        }).start();
     }
 
+    /**
     public void loadMask(ActionEvent actionEvent) {
         disableAllButtons();
         worker = new Thread(){
@@ -260,5 +264,12 @@ public class DisplayController {
         worker.start();
         stage = "MASK";
         INTERRUPT.setDisable(false);
+    }
+     */
+
+    private Image getJavaFXImage(Mat mat){
+        MatOfByte matByte = new MatOfByte();
+        Imgcodecs.imencode(".bmp", mat, matByte);
+        return new Image(new ByteArrayInputStream(matByte.toArray()));
     }
 }

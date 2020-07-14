@@ -4,106 +4,115 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DisplayController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DisplayController">
    <children>
-      <GridPane fx:id="IMGDISP" alignment="CENTER" gridLinesVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="560.0" AnchorPane.topAnchor="0.0">
-         <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
-            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints percentHeight="50.0" vgrow="ALWAYS" />
-            <RowConstraints percentHeight="50.0" vgrow="ALWAYS" />
-         </rowConstraints>
-         <children>
-            <ImageView fx:id="ORIG" fitHeight="350" fitWidth="350" pickOnBounds="true">
-               <image>
-                  <Image url="@../../../../../../../Pictures/instructions.png" />
-               </image>
-            </ImageView>
-            <ImageView fx:id="BLUR" fitHeight="350.0" fitWidth="350.0" pickOnBounds="true" GridPane.columnIndex="1" />
-            <ImageView fx:id="CANY" fitHeight="350.0" fitWidth="350.0" pickOnBounds="true" GridPane.rowIndex="1" />
-            <ImageView fx:id="MASK" fitHeight="350.0" fitWidth="350.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-         </children>
-      </GridPane>
-      <VBox prefWidth="500.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-         <children>
-            <Label text="BILATERAL FILTERING">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="10.0" />
-               </VBox.margin>
-            </Label>
-            <Label layoutX="10.0" layoutY="205.0" text="Filter Size" />
-            <Slider fx:id="ThreshSize" layoutX="10.0" layoutY="62.0" majorTickUnit="2.0" max="19.0" min="1.0" minorTickCount="0" prefHeight="50.0" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
-            <Label layoutX="10.0" layoutY="37.0" text="Filter Sigma" />
-            <Slider fx:id="ThreshSigma" layoutX="10.0" layoutY="55.0" majorTickUnit="10.0" max="180.0" minorTickCount="1" prefHeight="50.0" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-            <Separator>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets bottom="10.0" top="10.0" />
-               </VBox.margin>
-            </Separator>
-            <Label layoutX="10.0" layoutY="10.0" text="CANNY THRESHOLDING">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="10.0" />
-               </VBox.margin>
-            </Label>
-            <Label text="First Threshold" />
-            <Slider fx:id="Thresh001" majorTickUnit="15.0" max="255.0" prefHeight="50.0" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-            <Label text="Second Threshold" />
-            <Slider fx:id="Thresh002" layoutX="10.0" layoutY="223.0" majorTickUnit="15.0" max="255.0" prefHeight="50.0" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
-            <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" prefHeight="40.0" prefWidth="200.0">
-              <buttons>
-                <Button fx:id="LOADBLUR" mnemonicParsing="false" onAction="#loadBlur" text="LOAD BLUR">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font></Button>
-                  <Button fx:id="LOADCANY" layoutX="176.0" layoutY="18.0" mnemonicParsing="false" onAction="#loadCany" text="LOAD CANY">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="LOADMASK" layoutX="220.0" layoutY="18.0" mnemonicParsing="false" onAction="#loadMask" text="LOAD MASK">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-              </buttons>
-            </ButtonBar>
-            <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" layoutX="10.0" layoutY="355.0" prefHeight="40.0" prefWidth="200.0">
-               <buttons>
-                  <Button fx:id="INTERRUPT" layoutX="265.0" layoutY="18.0" mnemonicParsing="false" onAction="#interrupt" text="INTERRUPT" textFill="RED">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="SAVE" layoutX="223.0" layoutY="18.0" mnemonicParsing="false" onAction="#saveMask" text="SAVE" textFill="BLUE">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-               </buttons>
-            </ButtonBar>
-         </children>
-      </VBox>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab fx:id="InstructionsTab" closable="false" text="INSTRUCTIONS">
+               <content>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+               </content>
+          </Tab>
+          <Tab fx:id="ApplyBlurTab" closable="false" text="APPLY BLUR">
+            <content>
+              <AnchorPane fx:id="ApplyBlurAnchorPane" minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <ImageView fx:id="BlurImage" fitHeight="600.0" fitWidth="600.0" layoutX="-33.0" layoutY="-13.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <VBox prefWidth="500.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="BILATERAL FILTERING">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="BilateralFilteringFilterSizeLabel" text="FILTER SIZE:">
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding></Label>
+                              <Slider fx:id="BilateralFilteringFilterSize" majorTickUnit="2.0" max="19.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
+                              <Label fx:id="BilateralFilteringFilterSigmaLabel" text="FILTER SIGMA:">
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding></Label>
+                              <Slider fx:id="BilateralFilteringFilterSigma" majorTickUnit="10.0" max="180.0" minorTickCount="1" prefHeight="50.0" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                              <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" prefHeight="40.0" prefWidth="200.0">
+                                <buttons>
+                                  <Button fx:id="LoadBlur" mnemonicParsing="false" onAction="#loadBlur" text="LOAD BLUR" textFill="BLUE">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="ResetBlur" layoutX="219.0" layoutY="18.0" mnemonicParsing="false" onAction="#resetBlur" text="RESET BLUR" textFill="RED">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                </buttons>
+                              </ButtonBar>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="ApplyCannyTab" closable="false" text="APPLY CANNY">
+               <content>
+                  <AnchorPane fx:id="ApplyCannyAnchorPane" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fx:id="CannyImage" fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <VBox prefWidth="500.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="CANNY THRESHOLDING">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="CannyThreshold01Label" text="THRESHOLD 1 VALUE: ">
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding></Label>
+                              <Slider fx:id="CannyThreshold01" majorTickUnit="15.0" max="255.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                              <Label fx:id="CannyThreshold02Label" text="THRESHOLD 02 VALUE:">
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding></Label>
+                              <Slider fx:id="CannyThreshold02" majorTickUnit="15.0" max="255.0" prefHeight="50.0" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                              <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" prefHeight="40.0" prefWidth="200.0">
+                                 <buttons>
+                                    <Button fx:id="LoadCanny" mnemonicParsing="false" onAction="#loadCanny" text="LOAD CANNY" textFill="BLUE">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="ResetCanny" layoutX="213.0" layoutY="18.0" mnemonicParsing="false" onAction="#resetCanny" text="RESET CANNY" textFill="RED">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                 </buttons>
+                              </ButtonBar>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="ApplyMaskTab" closable="false" text="APPLY MASK" />
+        </tabs>
+      </TabPane>
    </children>
 </AnchorPane>

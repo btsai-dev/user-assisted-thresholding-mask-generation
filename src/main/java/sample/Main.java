@@ -6,7 +6,6 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -43,6 +42,7 @@ public class Main extends Application {
             System.exit(0);
         }
         for (File file : dirList){
+            System.out.printf("Attempting to read %s\n", file.getName());
             BufferedImage img;
             try {
                 img = ImageIO.read(file);
