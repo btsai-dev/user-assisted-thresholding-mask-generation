@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 
 public class Main extends Application {
 
@@ -19,20 +21,20 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File directory = directoryChooser.showDialog(primaryStage);
+        File saveDir = new File(directory.getAbsolutePath() + "/segmentation");
+        saveDir.mkdirs();
 
-        FXMLLoader loader = new FXMLLoader(
-                Main.class.getResource(
-                        "/Display.fxml"
-                )
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/Display.fxml"));
+
+        Stage stage = new Stage();
+        Scene scene = new Scene(
+                loader.load()
         );
-        primaryStage.setTitle("Select");
-        primaryStage.setScene(
-                new Scene(
-                        loader.load()
-                )
-        );
-        primaryStage.setResizable(true);
-        primaryStage.show();
+
+        stage.setTitle("Select");
+        stage.setResizable(true);
+        // primaryStage.setScene(defalt);
         DisplayController controller = loader.<DisplayController>getController();
 
         File[] dirList = directory.listFiles();
@@ -54,13 +56,30 @@ public class Main extends Application {
                 System.out.println("File is not an image.");
                 continue;
             }
+
             Image image = SwingFXUtils.toFXImage(img, null);
+            controller.saveDir = saveDir;
             controller.initData(image, file);
+            stage.setScene(scene);
+            stage.showAndWait();
         }
     }
 
 
-    public static void main(String[] args) {
-        launch(args);
+    public static void main(String[] args){
+        System.out.println("Version 0.1.0");
+        try {
+            File file = new File("C:\\Users\\godon\\Desktop\\test.log");
+            PrintStream ps = new PrintStream(file);
+            try {
+                launch(args);
+            } catch (Exception e) {
+                e.printStackTrace();
+                e.printStackTrace(ps);
+            }
+            ps.close();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

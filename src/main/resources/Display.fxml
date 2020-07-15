@@ -84,13 +84,21 @@
                               <Label fx:id="CannyThreshold01Label" text="THRESHOLD 1 VALUE: ">
                                  <padding>
                                     <Insets bottom="5.0" top="5.0" />
-                                 </padding></Label>
+                                 </padding>
+                              </Label>
                               <Slider fx:id="CannyThreshold01" majorTickUnit="15.0" max="255.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
                               <Label fx:id="CannyThreshold02Label" text="THRESHOLD 02 VALUE:">
                                  <padding>
                                     <Insets bottom="5.0" top="5.0" />
-                                 </padding></Label>
+                                 </padding>
+                              </Label>
                               <Slider fx:id="CannyThreshold02" majorTickUnit="15.0" max="255.0" prefHeight="50.0" prefWidth="300.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                              <Label fx:id="CannyKernelSizeLabel" text="KERNEL SIZE: ">
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Slider fx:id="CannyKernelSize" majorTickUnit="2.0" max="7.0" min="3.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
                               <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" prefHeight="40.0" prefWidth="200.0">
                                  <buttons>
                                     <Button fx:id="LoadCanny" mnemonicParsing="false" onAction="#loadCanny" text="LOAD CANNY" textFill="BLUE">
@@ -111,7 +119,95 @@
                   </AnchorPane>
                </content>
             </Tab>
-            <Tab fx:id="ApplyMaskTab" closable="false" text="APPLY MASK" />
+            <Tab fx:id="ApplyMorphTab" closable="false" text="APPLY MORPHOLOGICAL">
+               <content>
+                  <AnchorPane fx:id="ApplyMorphAnchorPane" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fx:id="MorphImage" fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <VBox prefWidth="500.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="CLOSING">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="MorphKernelSizeLabel" text="KERNEL SIZE: ">
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <Slider fx:id="MorphKernelSize" majorTickUnit="2.0" max="15.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                              <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" prefHeight="40.0" prefWidth="200.0">
+                                 <buttons>
+                                    <Button fx:id="LoadMorph" mnemonicParsing="false" onAction="#loadMorph" text="LOAD MORPH" textFill="BLUE">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="ResetMorph" layoutX="213.0" layoutY="18.0" mnemonicParsing="false" onAction="#resetMorph" text="RESET MORPH" textFill="RED">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                 </buttons>
+                              </ButtonBar>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="ApplyMaskTab" closable="false" text="APPLY MASK">
+               <content>
+                  <AnchorPane fx:id="ApplyMaskAnchorPane" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fx:id="MaskImage" fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" />
+                        <VBox prefWidth="500.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="GENERATE MASK">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </padding>
+                              </Label>
+                              <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" prefHeight="40.0" prefWidth="200.0">
+                                 <buttons>
+                                    <Button fx:id="GenerateMask" mnemonicParsing="false" onAction="#generateMask" text="BEGIN GENERATION" textFill="BLUE">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="InterruptGenerateMask" layoutX="213.0" layoutY="18.0" mnemonicParsing="false" onAction="#interruptGenerateMask" text="INTURRUPT GENERATION" textFill="RED">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                 </buttons>
+                              </ButtonBar>
+                              <ButtonBar buttonOrder="U+L_HE+FBIX_NCYOA_R" layoutX="10.0" layoutY="40.0" prefHeight="40.0" prefWidth="200.0">
+                                 <buttons>
+                                    <Button fx:id="SaveMask" layoutX="213.0" layoutY="18.0" mnemonicParsing="false" onAction="#saveMask" text="SAVE MASK" textFill="#00ab00">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="NextImage" layoutX="218.0" layoutY="18.0" mnemonicParsing="false" onAction="#nextImage" text="NEXT IMAGE" textFill="#f200ff">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                 </buttons>
+                              </ButtonBar>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content></Tab>
         </tabs>
       </TabPane>
    </children>
